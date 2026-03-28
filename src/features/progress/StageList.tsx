@@ -21,6 +21,8 @@ export function StageList({ stages, activeStageId, onSelectStage }: StageListPro
             key={stage.id}
             data-stage-id={stage.id}
             data-locked={!unlocked || undefined}
+            tabIndex={-1}
+            onMouseDown={(e) => e.preventDefault()}
             onClick={() => {
               if (unlocked) onSelectStage(stage.id);
             }}

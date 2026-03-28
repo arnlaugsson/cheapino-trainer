@@ -125,6 +125,8 @@ function App() {
                   </div>
                 )}
               <button
+                tabIndex={-1}
+                onMouseDown={(e) => e.preventDefault()}
                 onClick={handleNextExercise}
                 className="mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded text-sm font-mono"
               >

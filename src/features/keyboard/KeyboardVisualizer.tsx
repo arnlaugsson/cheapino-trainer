@@ -85,6 +85,8 @@ export function KeyboardVisualizer({
         {layout.layers.map((layer) => (
           <button
             key={layer.name}
+            tabIndex={-1}
+            onMouseDown={(e) => e.preventDefault()}
             onClick={() => {
               if (!lockedLayer) {
                 setBrowsingLayer(layer.name);
