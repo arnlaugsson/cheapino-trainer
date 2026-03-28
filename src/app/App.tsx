@@ -8,12 +8,14 @@ import { KeySequenceView } from "../features/trainer/KeySequenceView";
 import { generateExercise } from "../features/trainer/exercise-generator";
 import { StageList } from "../features/progress/StageList";
 import { AboutView } from "../features/about/AboutView";
+import { ConfigView } from "../features/config/ConfigView";
+import type { Layout } from "../data/layout";
 import {
   saveResult,
   isStageComplete,
 } from "../features/progress/progress-store";
 
-type Page = "train" | "about";
+type Page = "train" | "about" | "config";
 
 function App() {
   const [page, setPage] = useState<Page>("train");
@@ -24,9 +26,19 @@ function App() {
     accuracy: number;
   } | null>(null);
   const [exercise, setExercise] = useState(() => generateExercise(stages[0]));
+  const [customLayout, setCustomLayout] = useState<Layout | null>(null);
 
+  const layout = customLayout ?? defaultLayout;
   const stage = stages[activeStageId];
   const { activeKeys } = useKeyPress();
+
+  const handleImportLayout = useCallback((imported: Layout) => {
+    setCustomLayout(imported);
+  }, []);
+
+  const handleResetLayout = useCallback(() => {
+    setCustomLayout(null);
+  }, []);
 
   const handleComplete = useCallback(
     (result: { wpm: number; accuracy: number }) => {
@@ -100,6 +112,18 @@ function App() {
             >
               About
             </button>
+            <button
+              tabIndex={-1}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => setPage("config")}
+              className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${
+                page === "config"
+                  ? "text-primary underline underline-offset-8"
+                  : "text-on-surface-variant opacity-50 hover:text-primary-light"
+              }`}
+            >
+              Config
+            </button>
           </nav>
         </div>
         <button
@@ -120,6 +144,14 @@ function App() {
       {page === "about" ? (
         <div className="flex-1 overflow-y-auto">
           <AboutView />
+        </div>
+      ) : page === "config" ? (
+        <div className="flex-1 overflow-y-auto">
+          <ConfigView
+            onImport={handleImportLayout}
+            onReset={handleResetLayout}
+            hasCustomLayout={customLayout !== null}
+          />
         </div>
       ) : (
         <div className="flex flex-1 overflow-hidden">
@@ -148,7 +180,7 @@ function App() {
 
             <div className="mb-12 w-full flex justify-center">
               <KeyboardVisualizer
-                layout={defaultLayout}
+                layout={layout}
                 activeLayer={stage.layers[stage.layers.length - 1]}
                 activeKeys={activeKeys}
               />
