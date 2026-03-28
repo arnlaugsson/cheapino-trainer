@@ -177,18 +177,64 @@ type VilData = {
 };
 
 /**
- * Cheapino matrix layout: the .vil file has rows/cols as physical matrix positions.
- * The Cheapino has 4 rows x 10 cols in its matrix (using duplex matrix).
- * Rows 0-2 are finger keys, row 3 is thumb keys.
- * Cols 0-4 are left half, cols 5-9 are right half.
+ * Cheapino matrix layout.
+ *
+ * The Cheapino uses a duplex matrix. The .vil file may store keys as:
+ *   - 4 rows x 10 cols (left 5 + right 5 per row)
+ *   - 8 rows x 5 cols (duplex: rows 0-3 = left, rows 4-7 = right)
+ *   - Other shapes depending on firmware config
+ *
+ * We normalize any shape to the expected 4 rows per half (3 finger + 1 thumb),
+ * 5 cols per half. The target layout matches defaultLayout in layout.ts.
  */
-const LEFT_COLS = 5;
 
-function splitMatrixRow(matrixRow: number[]): { left: number[]; right: number[] } {
+const EXPECTED_COLS_PER_HALF = 5;
+const EXPECTED_ROWS = 4; // 3 finger + 1 thumb
+
+type HalfMatrix = number[][];
+
+function normalizeToHalves(matrixLayer: number[][]): { left: HalfMatrix; right: HalfMatrix } {
+  const totalRows = matrixLayer.length;
+  const totalCols = matrixLayer[0]?.length ?? 0;
+
+  // Shape: 4 rows x 10 cols — standard split (left 5 | right 5)
+  if (totalCols >= 10) {
+    const left: HalfMatrix = [];
+    const right: HalfMatrix = [];
+    for (const row of matrixLayer) {
+      left.push(row.slice(0, EXPECTED_COLS_PER_HALF));
+      right.push(row.slice(EXPECTED_COLS_PER_HALF, EXPECTED_COLS_PER_HALF * 2));
+    }
+    return { left: left.slice(0, EXPECTED_ROWS), right: right.slice(0, EXPECTED_ROWS) };
+  }
+
+  // Shape: 8 rows x 5 cols — duplex (top half = left, bottom half = right)
+  if (totalRows >= 8 && totalCols >= 5) {
+    const halfPoint = Math.floor(totalRows / 2);
+    const left = matrixLayer.slice(0, halfPoint).map((r) => r.slice(0, EXPECTED_COLS_PER_HALF));
+    const right = matrixLayer.slice(halfPoint).map((r) => r.slice(0, EXPECTED_COLS_PER_HALF));
+    return { left: left.slice(0, EXPECTED_ROWS), right: right.slice(0, EXPECTED_ROWS) };
+  }
+
+  // Fallback: treat all rows as single half, split evenly
+  const halfPoint = Math.floor(totalRows / 2);
   return {
-    left: matrixRow.slice(0, LEFT_COLS),
-    right: matrixRow.slice(LEFT_COLS),
+    left: matrixLayer.slice(0, halfPoint).map((r) => r.slice(0, EXPECTED_COLS_PER_HALF)),
+    right: matrixLayer.slice(halfPoint).map((r) => r.slice(0, EXPECTED_COLS_PER_HALF)),
   };
+}
+
+function padHalf(half: HalfMatrix): HalfMatrix {
+  const result: HalfMatrix = [];
+  for (let row = 0; row < EXPECTED_ROWS; row++) {
+    const srcRow = half[row] ?? [];
+    const padded: number[] = [];
+    for (let col = 0; col < EXPECTED_COLS_PER_HALF; col++) {
+      padded.push(srcRow[col] ?? KC_NO);
+    }
+    result.push(padded);
+  }
+  return result;
 }
 
 function layerFromMatrix(
@@ -197,14 +243,16 @@ function layerFromMatrix(
   layerNames: string[],
 ): Layer {
   const isBase = layerIndex === 0;
-  const left: KeyDef[][] = [];
-  const right: KeyDef[][] = [];
+  const { left: leftRaw, right: rightRaw } = normalizeToHalves(matrixLayer);
+  const leftPadded = padHalf(leftRaw);
+  const rightPadded = padHalf(rightRaw);
 
-  for (let row = 0; row < matrixLayer.length; row++) {
-    const { left: leftCodes, right: rightCodes } = splitMatrixRow(matrixLayer[row]);
-    left.push(leftCodes.map((kc) => keycodeToKeyDef(kc, isBase)));
-    right.push(rightCodes.map((kc) => keycodeToKeyDef(kc, isBase)));
-  }
+  const left: KeyDef[][] = leftPadded.map((row) =>
+    row.map((kc) => keycodeToKeyDef(kc, isBase)),
+  );
+  const right: KeyDef[][] = rightPadded.map((row) =>
+    row.map((kc) => keycodeToKeyDef(kc, isBase)),
+  );
 
   return {
     name: layerNames[layerIndex] ?? `Layer ${layerIndex}`,
