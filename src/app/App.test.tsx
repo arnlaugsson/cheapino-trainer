@@ -9,12 +9,12 @@ beforeEach(() => {
 describe("App", () => {
   it("renders the app header", () => {
     render(<App />);
-    expect(screen.getByText("Cheapino Trainer")).toBeDefined();
+    expect(screen.getByText("CHEAPINO_TRAINER")).toBeDefined();
   });
 
   it("shows the stage list", () => {
     render(<App />);
-    expect(screen.getByText("Home Position")).toBeDefined();
+    expect(screen.getByText("HOME_POSITION")).toBeDefined();
   });
 
   it("shows the keyboard visualizer", () => {

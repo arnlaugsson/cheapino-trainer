@@ -7,9 +7,17 @@ type StageListProps = {
   onSelectStage: (stageId: number) => void;
 };
 
+function formatStageId(id: number): string {
+  return `#${String(id).padStart(2, "0")}`;
+}
+
+function formatStageName(name: string): string {
+  return name.toUpperCase().replace(/\s+/g, "_");
+}
+
 export function StageList({ stages, activeStageId, onSelectStage }: StageListProps) {
   return (
-    <nav className="flex flex-col gap-1">
+    <nav className="flex flex-col">
       {stages.map((stage) => {
         const unlocked = isStageUnlocked(stage.id);
         const complete = isStageComplete(stage.id);
@@ -27,22 +35,39 @@ export function StageList({ stages, activeStageId, onSelectStage }: StageListPro
               if (unlocked) onSelectStage(stage.id);
             }}
             className={`
-              text-left px-3 py-2 rounded text-sm font-mono transition-colors
-              ${isActive ? "bg-blue-600/20 text-blue-400 border border-blue-600/40" : ""}
-              ${!isActive && unlocked ? "text-gray-300 hover:bg-gray-800" : ""}
-              ${!unlocked ? "text-gray-600 cursor-not-allowed" : ""}
+              text-left p-4 border-b border-outline transition-colors
+              ${isActive ? "bg-surface-highest border-l-4 border-l-primary" : "border-l-4 border-l-transparent"}
+              ${!isActive && unlocked ? "hover:bg-surface-high cursor-pointer" : ""}
+              ${!unlocked ? "cursor-not-allowed" : ""}
             `}
           >
-            <div className="flex items-center gap-2">
-              <span className="w-5 text-center">
-                {complete ? "\u2713" : unlocked ? stage.id : "\u2022"}
-              </span>
-              <span>{stage.name}</span>
+            <div className="flex justify-between items-start mb-2">
+              <span className="text-[10px] opacity-50">{formatStageId(stage.id)}</span>
+              {complete && (
+                <span className="text-[10px] text-primary font-bold">
+                  {progress.bestWpm > 0 ? `${progress.bestWpm} WPM` : "DONE"}
+                </span>
+              )}
+              {!complete && !unlocked && (
+                <span className="text-[10px] text-neutral-500">LOCKED</span>
+              )}
+              {!complete && unlocked && progress.attempts > 0 && (
+                <span className="text-[10px] text-on-surface-variant">
+                  {progress.bestWpm > 0 ? `${progress.bestWpm} WPM` : `${Math.round(progress.bestAccuracy * 100)}%`}
+                </span>
+              )}
             </div>
-            {unlocked && progress.attempts > 0 && (
-              <div className="ml-7 text-xs text-gray-500">
-                {stage.threshold.wpm > 0 && `${progress.bestWpm} WPM / `}
-                {Math.round(progress.bestAccuracy * 100)}% acc
+            <div className={`text-sm font-bold tracking-tight ${
+              unlocked ? "text-on-surface" : "text-neutral-500"
+            }`}>
+              {formatStageName(stage.name)}
+            </div>
+            {unlocked && (
+              <div className="w-full bg-surface-dim h-1 mt-3">
+                <div
+                  className="bg-primary h-full transition-all"
+                  style={{ width: complete ? "100%" : `${Math.min(progress.attempts * 10, 90)}%` }}
+                />
               </div>
             )}
           </button>

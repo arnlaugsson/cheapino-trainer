@@ -10,9 +10,9 @@ beforeEach(() => {
 describe("StageList", () => {
   it("renders all stage names", () => {
     render(<StageList stages={stages} activeStageId={0} onSelectStage={vi.fn()} />);
-    expect(screen.getByText("Home Position")).toBeDefined();
-    expect(screen.getByText("All Letters")).toBeDefined();
-    expect(screen.getByText("Full Integration")).toBeDefined();
+    expect(screen.getByText("HOME_POSITION")).toBeDefined();
+    expect(screen.getByText("ALL_LETTERS")).toBeDefined();
+    expect(screen.getByText("FULL_INTEGRATION")).toBeDefined();
   });
 
   it("marks stage 0 as unlocked", () => {
@@ -34,14 +34,14 @@ describe("StageList", () => {
   it("calls onSelectStage when an unlocked stage is clicked", () => {
     const onSelect = vi.fn();
     render(<StageList stages={stages} activeStageId={0} onSelectStage={onSelect} />);
-    fireEvent.click(screen.getByText("Home Position"));
+    fireEvent.click(screen.getByText("HOME_POSITION"));
     expect(onSelect).toHaveBeenCalledWith(0);
   });
 
   it("does not call onSelectStage when a locked stage is clicked", () => {
     const onSelect = vi.fn();
     render(<StageList stages={stages} activeStageId={0} onSelectStage={onSelect} />);
-    fireEvent.click(screen.getByText("All Letters"));
+    fireEvent.click(screen.getByText("ALL_LETTERS"));
     expect(onSelect).not.toHaveBeenCalled();
   });
 });

@@ -51,8 +51,8 @@ export function TrainerView({ prompt, onComplete }: TrainerViewProps) {
   }, [exercise.isComplete, exercise.startTime, exercise.correctKeystrokes, exercise.totalKeystrokes, onComplete]);
 
   return (
-    <div className="font-mono text-2xl leading-relaxed">
-      <div className="flex flex-wrap gap-0">
+    <div className="w-full max-w-4xl">
+      <div className="text-2xl lg:text-3xl tracking-normal leading-relaxed text-center">
         {exercise.chars.map((char, i) => {
           const isCursor = i === exercise.cursor && !exercise.isComplete;
           return (
@@ -60,10 +60,10 @@ export function TrainerView({ prompt, onComplete }: TrainerViewProps) {
               key={i}
               data-cursor={isCursor || undefined}
               className={`
-                ${char.status === "correct" ? "text-green-400" : ""}
-                ${char.status === "wrong" ? "text-red-400 bg-red-900/30" : ""}
-                ${char.status === "pending" ? "text-gray-500" : ""}
-                ${isCursor ? "border-b-2 border-blue-400" : ""}
+                ${char.status === "correct" ? "text-primary" : ""}
+                ${char.status === "wrong" ? "text-red-500 bg-red-900/20" : ""}
+                ${char.status === "pending" ? "opacity-30" : ""}
+                ${isCursor ? "border-b-2 border-primary caret-blink" : ""}
               `}
             >
               {char.char === " " ? "\u00A0" : char.char}
@@ -72,8 +72,8 @@ export function TrainerView({ prompt, onComplete }: TrainerViewProps) {
         })}
       </div>
       {exercise.isComplete && (
-        <div className="mt-6 text-base text-gray-400">
-          Exercise complete! Press any key for next exercise.
+        <div className="mt-8 text-sm text-on-surface-variant text-center uppercase tracking-widest">
+          Exercise complete — press Enter for next
         </div>
       )}
     </div>

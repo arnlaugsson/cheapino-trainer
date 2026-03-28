@@ -62,13 +62,33 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col">
-      <header className="border-b border-gray-800 px-6 py-4">
-        <h1 className="text-xl font-bold font-mono">Cheapino Trainer</h1>
+    <div className="h-screen flex flex-col bg-surface text-on-surface">
+      {/* HEADER */}
+      <header className="h-14 flex items-center justify-between px-8 bg-surface border-b border-outline shrink-0">
+        <div className="flex items-center gap-8">
+          <h1 className="font-headline font-black text-xl text-primary-light tracking-widest">
+            CHEAPINO_TRAINER
+          </h1>
+          <span className="text-[10px] text-on-surface-variant opacity-50 tracking-widest uppercase">
+            Stage {stage.id}: {stage.name}
+          </span>
+        </div>
+        <div className="text-[10px] text-on-surface-variant opacity-50 tracking-widest">
+          V1.0
+        </div>
       </header>
 
-      <div className="flex flex-1">
-        <aside className="w-56 border-r border-gray-800 p-4">
+      <div className="flex flex-1 overflow-hidden">
+        {/* STAGE SIDEBAR */}
+        <aside className="w-60 bg-surface-low border-r border-outline overflow-y-auto shrink-0">
+          <div className="p-4 border-b border-outline bg-surface-high">
+            <span className="text-[10px] font-bold text-primary tracking-widest uppercase block mb-1">
+              Current Protocol
+            </span>
+            <h3 className="font-headline text-lg leading-tight uppercase">
+              {stage.name}
+            </h3>
+          </div>
           <StageList
             stages={stages}
             activeStageId={activeStageId}
@@ -76,15 +96,15 @@ function App() {
           />
         </aside>
 
-        <main className="flex-1 p-8 max-w-4xl">
-          <div className="mb-6">
-            <h2 className="text-lg font-bold font-mono mb-1">
-              Stage {stage.id}: {stage.name}
-            </h2>
-            <p className="text-gray-400 text-sm">{stage.description}</p>
-          </div>
+        {/* MAIN CONTENT */}
+        <main className="flex-1 flex flex-col items-center justify-center p-8 overflow-y-auto">
+          {/* Stage description */}
+          <p className="text-sm text-on-surface-variant opacity-60 max-w-2xl text-center mb-8">
+            {stage.description}
+          </p>
 
-          <div className="mb-8">
+          {/* Keyboard visualizer */}
+          <div className="mb-12 w-full flex justify-center">
             <KeyboardVisualizer
               layout={defaultLayout}
               activeLayer={stage.layers[stage.layers.length - 1]}
@@ -92,7 +112,8 @@ function App() {
             />
           </div>
 
-          <div className="mb-6">
+          {/* Typing exercise */}
+          <div className="w-full flex justify-center">
             {exercise.type === "key-sequence" ? (
               <KeySequenceView
                 key={exerciseKey}
@@ -110,48 +131,82 @@ function App() {
             )}
           </div>
 
+          {/* Results panel */}
           {lastResult && (
-            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
-              <div className="flex gap-8 text-sm font-mono">
-                {stage.threshold.wpm > 0 && (
-                  <div>
-                    <span className="text-gray-500">WPM: </span>
-                    <span className="text-white">{lastResult.wpm}</span>
-                    <span className="text-gray-600">
-                      {" "}
-                      / {stage.threshold.wpm}
+            <div className="mt-8 flex items-center gap-12">
+              {stage.threshold.wpm > 0 && (
+                <div className="text-center">
+                  <div className="text-[10px] text-primary font-bold uppercase tracking-widest mb-1">
+                    WPM
+                  </div>
+                  <div className="font-headline text-3xl font-black">
+                    {lastResult.wpm}
+                    <span className="text-sm text-on-surface-variant opacity-40 ml-1">
+                      /{stage.threshold.wpm}
                     </span>
                   </div>
-                )}
-                <div>
-                  <span className="text-gray-500">Accuracy: </span>
-                  <span className="text-white">
-                    {Math.round(lastResult.accuracy * 100)}%
-                  </span>
-                  <span className="text-gray-600">
-                    {" "}
-                    / {Math.round(stage.threshold.accuracy * 100)}%
+                </div>
+              )}
+              <div className="text-center">
+                <div className="text-[10px] text-primary font-bold uppercase tracking-widest mb-1">
+                  Accuracy
+                </div>
+                <div className="font-headline text-3xl font-black">
+                  {Math.round(lastResult.accuracy * 100)}%
+                  <span className="text-sm text-on-surface-variant opacity-40 ml-1">
+                    /{Math.round(stage.threshold.accuracy * 100)}%
                   </span>
                 </div>
               </div>
-              {isStageComplete(activeStageId) &&
-                activeStageId < stages.length - 1 && (
-                  <div className="mt-3 text-green-400 text-sm">
-                    Stage complete! Next stage unlocked.
-                  </div>
-                )}
               <button
                 tabIndex={-1}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={handleNextExercise}
-                className="mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded text-sm font-mono"
+                className="bg-primary text-on-primary px-6 py-2 font-bold text-sm uppercase tracking-widest hover:bg-primary/80 transition-colors"
               >
                 Next Exercise
               </button>
             </div>
           )}
+
+          {lastResult && isStageComplete(activeStageId) &&
+            activeStageId < stages.length - 1 && (
+              <div className="mt-4 text-sm text-primary font-bold uppercase tracking-widest">
+                Stage complete — next stage unlocked
+              </div>
+            )}
         </main>
       </div>
+
+      {/* FOOTER */}
+      <footer className="h-8 flex items-center justify-between px-8 bg-surface-dim border-t border-outline shrink-0 text-[10px] uppercase tracking-widest">
+        <div className="flex items-center gap-6">
+          <span className="text-primary opacity-70">SYSTEM_READY</span>
+          <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_#2563eb]" />
+          <span className="text-on-surface-variant opacity-40">
+            KEYBOARD: CHEAPINO_36
+          </span>
+        </div>
+        <div className="flex items-center gap-6">
+          <a
+            href="https://get.vial.today/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-on-surface-variant opacity-40 hover:text-primary transition-colors"
+          >
+            VIAL_CONFIG
+          </a>
+          <a
+            href="https://github.com/arnlaugsson/cheapino-trainer"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-on-surface-variant opacity-40 hover:text-primary transition-colors"
+          >
+            GITHUB
+          </a>
+          <span className="text-primary opacity-50">CHPN.OS</span>
+        </div>
+      </footer>
     </div>
   );
 }

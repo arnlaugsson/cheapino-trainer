@@ -81,27 +81,30 @@ export function KeyboardVisualizer({
 
   return (
     <div>
-      <div className="flex gap-2 mb-4">
-        {layout.layers.map((layer) => (
-          <button
-            key={layer.name}
-            tabIndex={-1}
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={() => {
-              if (!lockedLayer) {
-                setBrowsingLayer(layer.name);
-                onLayerChange?.(layer.name);
-              }
-            }}
-            className={`px-3 py-1 rounded text-sm font-mono ${
-              displayLayerName === layer.name
-                ? "bg-blue-600 text-white"
-                : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-            } ${lockedLayer && layer.name !== activeLayer ? "opacity-50 cursor-not-allowed" : ""}`}
-          >
-            {layer.name}
-          </button>
-        ))}
+      <div className="flex gap-2 mb-6">
+        {layout.layers.map((layer) => {
+          const isSelected = displayLayerName === layer.name;
+          return (
+            <button
+              key={layer.name}
+              tabIndex={-1}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => {
+                if (!lockedLayer) {
+                  setBrowsingLayer(layer.name);
+                  onLayerChange?.(layer.name);
+                }
+              }}
+              className={`px-6 py-1 text-xs font-bold tracking-widest uppercase border transition-colors ${
+                isSelected
+                  ? "bg-primary text-on-primary border-primary"
+                  : "bg-transparent text-outline-dim border-outline hover:border-on-surface-variant"
+              } ${lockedLayer && layer.name !== activeLayer ? "opacity-50 cursor-not-allowed" : ""}`}
+            >
+              {layer.name}
+            </button>
+          );
+        })}
       </div>
       <svg
         viewBox={`${-padding} ${-padding} ${width + padding * 2} ${height + padding * 2}`}

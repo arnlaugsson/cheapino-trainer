@@ -1,1 +1,48 @@
 @import "tailwindcss";
+
+@theme {
+  --font-headline: "Space Grotesk", sans-serif;
+  --font-label: "JetBrains Mono", monospace;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --color-surface: #131313;
+  --color-surface-low: #1c1b1b;
+  --color-surface-high: #2a2a2a;
+  --color-surface-highest: #353534;
+  --color-surface-dim: #0e0e0e;
+
+  --color-on-surface: #e5e2e1;
+  --color-on-surface-variant: #c3c6d7;
+
+  --color-primary: #2563eb;
+  --color-primary-light: #b4c5ff;
+  --color-on-primary: #eeefff;
+
+  --color-outline: #434655;
+  --color-outline-dim: #8d90a0;
+}
+
+body {
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  font-family: "JetBrains Mono", monospace;
+  overflow: hidden;
+}
+
+.caret-blink {
+  animation: blink 1s infinite step-end;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--color-surface-dim); }
+::-webkit-scrollbar-thumb { background: var(--color-primary); }
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  display: inline-block;
+  line-height: 1;
+}

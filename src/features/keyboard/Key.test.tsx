@@ -18,8 +18,9 @@ describe("Key", () => {
         <Key label="A" x={0} y={0} width={50} height={50} state="highlighted" />
       </svg>,
     );
-    const rect = container.querySelector("rect");
-    expect(rect?.getAttribute("class")).toContain("highlighted");
+    const rects = container.querySelectorAll("rect");
+    const bodyRect = rects[rects.length - 1];
+    expect(bodyRect?.getAttribute("class")).toContain("highlighted");
   });
 
   it("applies dimmed state class", () => {
@@ -28,8 +29,9 @@ describe("Key", () => {
         <Key label="A" x={0} y={0} width={50} height={50} state="dimmed" />
       </svg>,
     );
-    const rect = container.querySelector("rect");
-    expect(rect?.getAttribute("class")).toContain("dimmed");
+    const rects = container.querySelectorAll("rect");
+    const bodyRect = rects[rects.length - 1];
+    expect(bodyRect?.getAttribute("class")).toContain("dimmed");
   });
 
   it("applies active (pressed) state class", () => {
@@ -38,8 +40,9 @@ describe("Key", () => {
         <Key label="A" x={0} y={0} width={50} height={50} state="active" />
       </svg>,
     );
-    const rect = container.querySelector("rect");
-    expect(rect?.getAttribute("class")).toContain("active");
+    const rects = container.querySelectorAll("rect");
+    const bodyRect = rects[rects.length - 1];
+    expect(bodyRect?.getAttribute("class")).toContain("active");
   });
 
   it("does not render blank keys", () => {
