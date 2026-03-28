@@ -108,7 +108,7 @@ export function KeyboardVisualizer({
       </div>
       <svg
         viewBox={`${-padding} ${-padding} ${width + padding * 2} ${height + padding * 2}`}
-        className="w-full max-w-2xl"
+        className="w-full max-w-4xl"
       >
         {renderHalf("left", displayLayer, activeKeys, isActiveLayer)}
         {renderHalf("right", displayLayer, activeKeys, isActiveLayer)}
