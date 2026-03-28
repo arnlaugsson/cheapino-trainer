@@ -16,6 +16,7 @@ export function TrainerView({ prompt, onComplete }: TrainerViewProps) {
       if (exercise.isComplete) return;
 
       if (e.key === "Backspace") {
+        e.preventDefault();
         exercise.handleBackspace();
         return;
       }
@@ -23,6 +24,7 @@ export function TrainerView({ prompt, onComplete }: TrainerViewProps) {
       // Ignore modifier keys, function keys, etc.
       if (e.key.length !== 1) return;
 
+      e.preventDefault();
       exercise.handleKey(e.key);
     },
     [exercise],
