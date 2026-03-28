@@ -41,7 +41,7 @@ function App() {
   const handleSelectStage = useCallback((stageId: number) => {
     setActiveStageId(stageId);
     setExercise(generateExercise(stages[stageId]));
-    setExerciseKey(0);
+    setExerciseKey((prev) => prev + 1);
     setLastResult(null);
   }, []);
 
