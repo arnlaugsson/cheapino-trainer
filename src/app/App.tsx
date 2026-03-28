@@ -73,9 +73,19 @@ function App() {
             Stage {stage.id}: {stage.name}
           </span>
         </div>
-        <div className="text-[10px] text-on-surface-variant opacity-50 tracking-widest">
-          V1.0
-        </div>
+        <button
+          tabIndex={-1}
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => {
+            document.documentElement.classList.toggle("light");
+            const isLight = document.documentElement.classList.contains("light");
+            localStorage.setItem("cheapino-theme", isLight ? "light" : "dark");
+          }}
+          className="flex items-center gap-2 text-[10px] font-bold tracking-widest border border-outline px-3 py-1 hover:bg-surface-high transition-colors uppercase"
+        >
+          <span className="material-symbols-outlined text-sm">light_mode</span>
+          THEME
+        </button>
       </header>
 
       <div className="flex flex-1 overflow-hidden">

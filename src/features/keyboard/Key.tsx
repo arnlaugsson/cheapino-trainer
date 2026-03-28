@@ -11,9 +11,9 @@ type KeyProps = {
 };
 
 const STATE_STYLES: Record<KeyState, { fill: string; stroke: string; textFill: string; shadow: string; className: string }> = {
-  idle: { fill: "#2a2a2a", stroke: "#434655", textFill: "#c3c6d7", shadow: "rgba(0,0,0,0.5)", className: "idle" },
-  highlighted: { fill: "#2a2a2a", stroke: "#2563eb", textFill: "#b4c5ff", shadow: "rgba(0,0,0,0.5)", className: "highlighted" },
-  dimmed: { fill: "#1c1b1b", stroke: "#353534", textFill: "#4b5563", shadow: "rgba(0,0,0,0.3)", className: "dimmed" },
+  idle: { fill: "var(--t-key-fill)", stroke: "var(--t-key-stroke)", textFill: "var(--t-key-text)", shadow: "var(--t-key-shadow)", className: "idle" },
+  highlighted: { fill: "var(--t-key-fill)", stroke: "var(--t-key-hl-stroke)", textFill: "var(--t-key-hl-text)", shadow: "var(--t-key-shadow)", className: "highlighted" },
+  dimmed: { fill: "var(--t-key-dim-fill)", stroke: "var(--t-key-dim-stroke)", textFill: "var(--t-key-dim-text)", shadow: "var(--t-key-dim-shadow)", className: "dimmed" },
   active: { fill: "#2563eb", stroke: "#b4c5ff", textFill: "#eeefff", shadow: "rgba(37,99,235,0.3)", className: "active" },
 };
 

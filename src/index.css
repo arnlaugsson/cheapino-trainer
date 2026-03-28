@@ -5,26 +5,76 @@
   --font-label: "JetBrains Mono", monospace;
   --font-mono: "JetBrains Mono", monospace;
 
-  --color-surface: #131313;
-  --color-surface-low: #1c1b1b;
-  --color-surface-high: #2a2a2a;
-  --color-surface-highest: #353534;
-  --color-surface-dim: #0e0e0e;
+  --color-surface: var(--t-surface);
+  --color-surface-low: var(--t-surface-low);
+  --color-surface-high: var(--t-surface-high);
+  --color-surface-highest: var(--t-surface-highest);
+  --color-surface-dim: var(--t-surface-dim);
 
-  --color-on-surface: #e5e2e1;
-  --color-on-surface-variant: #c3c6d7;
+  --color-on-surface: var(--t-on-surface);
+  --color-on-surface-variant: var(--t-on-surface-variant);
 
   --color-primary: #2563eb;
-  --color-primary-light: #b4c5ff;
+  --color-primary-light: var(--t-primary-light);
   --color-on-primary: #eeefff;
 
-  --color-outline: #434655;
-  --color-outline-dim: #8d90a0;
+  --color-outline: var(--t-outline);
+  --color-outline-dim: var(--t-outline-dim);
+}
+
+/* Dark theme (default) */
+:root {
+  --t-surface: #131313;
+  --t-surface-low: #1c1b1b;
+  --t-surface-high: #2a2a2a;
+  --t-surface-highest: #353534;
+  --t-surface-dim: #0e0e0e;
+  --t-on-surface: #e5e2e1;
+  --t-on-surface-variant: #c3c6d7;
+  --t-primary-light: #b4c5ff;
+  --t-outline: #434655;
+  --t-outline-dim: #8d90a0;
+
+  --t-key-fill: #2a2a2a;
+  --t-key-stroke: #434655;
+  --t-key-text: #c3c6d7;
+  --t-key-shadow: rgba(0,0,0,0.5);
+  --t-key-hl-stroke: #2563eb;
+  --t-key-hl-text: #b4c5ff;
+  --t-key-dim-fill: #1c1b1b;
+  --t-key-dim-stroke: #353534;
+  --t-key-dim-text: #4b5563;
+  --t-key-dim-shadow: rgba(0,0,0,0.3);
+}
+
+/* Light theme */
+:root.light {
+  --t-surface: #f5f5f5;
+  --t-surface-low: #ebebeb;
+  --t-surface-high: #e0e0e0;
+  --t-surface-highest: #d5d5d5;
+  --t-surface-dim: #fafafa;
+  --t-on-surface: #1a1a1a;
+  --t-on-surface-variant: #4a4a5a;
+  --t-primary-light: #1d4ed8;
+  --t-outline: #c0c0cc;
+  --t-outline-dim: #6b6b80;
+
+  --t-key-fill: #e8e8e8;
+  --t-key-stroke: #c0c0cc;
+  --t-key-text: #4a4a5a;
+  --t-key-shadow: rgba(0,0,0,0.15);
+  --t-key-hl-stroke: #2563eb;
+  --t-key-hl-text: #1d4ed8;
+  --t-key-dim-fill: #f0f0f0;
+  --t-key-dim-stroke: #d5d5d5;
+  --t-key-dim-text: #a0a0a0;
+  --t-key-dim-shadow: rgba(0,0,0,0.08);
 }
 
 body {
-  background: var(--color-surface);
-  color: var(--color-on-surface);
+  background: var(--t-surface);
+  color: var(--t-on-surface);
   font-family: "JetBrains Mono", monospace;
   overflow: hidden;
 }
@@ -38,8 +88,8 @@ body {
 }
 
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--color-surface-dim); }
-::-webkit-scrollbar-thumb { background: var(--color-primary); }
+::-webkit-scrollbar-track { background: var(--t-surface-dim); }
+::-webkit-scrollbar-thumb { background: #2563eb; }
 
 .material-symbols-outlined {
   font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
