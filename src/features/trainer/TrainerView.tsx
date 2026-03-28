@@ -51,8 +51,8 @@ export function TrainerView({ prompt, onComplete }: TrainerViewProps) {
   }, [exercise.isComplete, exercise.startTime, exercise.correctKeystrokes, exercise.totalKeystrokes, onComplete]);
 
   return (
-    <div className="w-full max-w-4xl">
-      <div className="text-2xl lg:text-3xl tracking-normal leading-relaxed text-center">
+    <div className="w-full">
+      <div className="text-3xl lg:text-4xl tracking-normal leading-relaxed text-center">
         {exercise.chars.map((char, i) => {
           const isCursor = i === exercise.cursor && !exercise.isComplete;
           return (

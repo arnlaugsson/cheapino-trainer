@@ -97,7 +97,7 @@ function App() {
         </aside>
 
         {/* MAIN CONTENT */}
-        <main className="flex-1 flex flex-col items-center justify-center p-8 overflow-y-auto">
+        <main className="flex-1 flex flex-col items-center justify-center px-12 py-8 overflow-y-auto">
           {/* Stage description */}
           <p className="text-sm text-on-surface-variant opacity-60 max-w-2xl text-center mb-8">
             {stage.description}
