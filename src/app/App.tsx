@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { stages } from "../data/stages";
 import { defaultLayout } from "../data/layout";
 import { KeyboardVisualizer } from "../features/keyboard/KeyboardVisualizer";
@@ -43,6 +43,22 @@ function App() {
     setExercise(generateExercise(stages[stageId]));
     setExerciseKey(0);
     setLastResult(null);
+  }, []);
+
+  const lastResultRef = useRef(lastResult);
+  lastResultRef.current = lastResult;
+  const handleNextRef = useRef(handleNextExercise);
+  handleNextRef.current = handleNextExercise;
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter" && lastResultRef.current) {
+        e.preventDefault();
+        handleNextRef.current();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   return (
