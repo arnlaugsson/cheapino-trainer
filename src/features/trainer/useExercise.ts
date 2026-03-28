@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 
 type CharStatus = "pending" | "correct" | "wrong";
 
@@ -31,53 +31,62 @@ export function useExercise(prompt: string): UseExerciseResult {
   const [correctKeystrokes, setCorrectKeystrokes] = useState(0);
   const [startTime, setStartTime] = useState<number | null>(null);
 
+  const cursorRef = useRef(cursor);
+  cursorRef.current = cursor;
+
+  const startTimeRef = useRef(startTime);
+  startTimeRef.current = startTime;
+
   const isComplete = cursor >= prompt.length && chars.every((c) => c.status === "correct");
 
   const handleKey = useCallback(
     (key: string) => {
-      if (cursor >= prompt.length) return;
+      const cur = cursorRef.current;
+      if (cur >= prompt.length) return;
 
-      if (startTime === null) {
+      if (startTimeRef.current === null) {
         setStartTime(Date.now());
       }
 
       setTotalKeystrokes((prev) => prev + 1);
 
-      if (key === prompt[cursor]) {
+      if (key === prompt[cur]) {
         setChars((prev) => {
           const next = [...prev];
-          next[cursor] = { ...next[cursor], status: "correct" };
+          next[cur] = { ...next[cur], status: "correct" };
           return next;
         });
         setCursor((prev) => prev + 1);
+        cursorRef.current = cur + 1;
         setCorrectKeystrokes((prev) => prev + 1);
       } else {
         setChars((prev) => {
           const next = [...prev];
-          next[cursor] = { ...next[cursor], status: "wrong" };
+          next[cur] = { ...next[cur], status: "wrong" };
           return next;
         });
       }
     },
-    [cursor, prompt, startTime],
+    [prompt],
   );
 
   const handleBackspace = useCallback(() => {
-    // Only allow backspace when current position has a wrong character
-    if (cursor >= prompt.length || chars[cursor]?.status !== "wrong") {
-      return;
-    }
+    const cur = cursorRef.current;
+    if (cur >= prompt.length) return;
+
     setChars((prev) => {
+      if (prev[cur]?.status !== "wrong") return prev;
       const next = [...prev];
-      next[cursor] = { ...next[cursor], status: "pending" };
+      next[cur] = { ...next[cur], status: "pending" };
       return next;
     });
     setTotalKeystrokes((prev) => prev + 1);
-  }, [cursor, chars, prompt.length]);
+  }, [prompt.length]);
 
   const reset = useCallback(() => {
     setChars(buildChars(prompt));
     setCursor(0);
+    cursorRef.current = 0;
     setTotalKeystrokes(0);
     setCorrectKeystrokes(0);
     setStartTime(null);

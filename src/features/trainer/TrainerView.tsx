@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useExercise } from "./useExercise";
 import { calculateWpm, calculateAccuracy } from "./metrics";
 
@@ -10,14 +10,17 @@ type TrainerViewProps = {
 export function TrainerView({ prompt, onComplete }: TrainerViewProps) {
   const exercise = useExercise(prompt);
   const completedRef = useRef(false);
+  const exerciseRef = useRef(exercise);
+  exerciseRef.current = exercise;
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (exercise.isComplete) return;
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const ex = exerciseRef.current;
+      if (ex.isComplete) return;
 
       if (e.key === "Backspace") {
         e.preventDefault();
-        exercise.handleBackspace();
+        ex.handleBackspace();
         return;
       }
 
@@ -25,15 +28,12 @@ export function TrainerView({ prompt, onComplete }: TrainerViewProps) {
       if (e.key.length !== 1) return;
 
       e.preventDefault();
-      exercise.handleKey(e.key);
-    },
-    [exercise],
-  );
+      ex.handleKey(e.key);
+    };
 
-  useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleKeyDown]);
+  }, []);
 
   useEffect(() => {
     if (exercise.isComplete && !completedRef.current) {
