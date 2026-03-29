@@ -14,6 +14,7 @@ type KeyboardVisualizerProps = {
   activeLayer: string;
   activeKeys: Set<string>;
   lockedLayer?: boolean;
+  hideLabels?: boolean;
   onLayerChange?: (layerName: string) => void;
 };
 
@@ -34,6 +35,7 @@ function renderHalf(
   layer: Layer,
   activeKeys: Set<string>,
   isActiveLayer: boolean,
+  hideLabels: boolean,
 ) {
   const keys = half === "left" ? layer.left : layer.right;
   const positions = getKeyPositions(half, FINGER_ROWS, THUMB_KEYS);
@@ -52,6 +54,7 @@ function renderHalf(
           height={pos.height}
           state={getKeyState(keyDef, activeKeys, isActiveLayer)}
           blank={keyDef.blank}
+          hideLabel={hideLabels}
         />
       );
     }),
@@ -63,6 +66,7 @@ export function KeyboardVisualizer({
   activeLayer,
   activeKeys,
   lockedLayer = false,
+  hideLabels = false,
   onLayerChange,
 }: KeyboardVisualizerProps) {
   const [browsingLayer, setBrowsingLayer] = useState<string | null>(null);
@@ -111,8 +115,8 @@ export function KeyboardVisualizer({
         viewBox={`${-padding} ${-padding} ${width + padding * 2} ${height + padding * 2}`}
         className="w-full"
       >
-        {renderHalf("left", displayLayer, activeKeys, isActiveLayer)}
-        {renderHalf("right", displayLayer, activeKeys, isActiveLayer)}
+        {renderHalf("left", displayLayer, activeKeys, isActiveLayer, hideLabels)}
+        {renderHalf("right", displayLayer, activeKeys, isActiveLayer, hideLabels)}
       </svg>
     </div>
   );

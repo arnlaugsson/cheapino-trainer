@@ -26,6 +26,7 @@ function App() {
   const [presetId, setPresetId] = useState(getSavedPresetId);
   const [activeStageId, setActiveStageId] = useState(0);
   const [exerciseKey, setExerciseKey] = useState(0);
+  const [hideLabels, setHideLabels] = useState(false);
   const [lastResult, setLastResult] = useState<{
     wpm: number;
     accuracy: number;
@@ -186,11 +187,25 @@ function App() {
               {stage.description}
             </p>
 
-            <div className="mb-12 w-full flex justify-center">
+            <div className="mb-12 w-full">
+              <div className="flex justify-end mb-2">
+                <button
+                  tabIndex={-1}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => setHideLabels((prev) => !prev)}
+                  className="flex items-center gap-2 text-[10px] font-bold tracking-widest border border-outline px-3 py-1 hover:bg-surface-high transition-colors uppercase"
+                >
+                  <span className="material-symbols-outlined text-sm">
+                    {hideLabels ? "visibility_off" : "visibility"}
+                  </span>
+                  {hideLabels ? "LABELS_OFF" : "LABELS_ON"}
+                </button>
+              </div>
               <KeyboardVisualizer
                 layout={layout}
                 activeLayer={stage.layers[stage.layers.length - 1]}
                 activeKeys={activeKeys}
+                hideLabels={hideLabels}
               />
             </div>
 

@@ -8,6 +8,7 @@ type KeyProps = {
   height: number;
   state: KeyState;
   blank?: boolean;
+  hideLabel?: boolean;
 };
 
 const STATE_STYLES: Record<KeyState, { fill: string; stroke: string; textFill: string; shadow: string; className: string }> = {
@@ -17,7 +18,7 @@ const STATE_STYLES: Record<KeyState, { fill: string; stroke: string; textFill: s
   active: { fill: "#2563eb", stroke: "#b4c5ff", textFill: "#eeefff", shadow: "rgba(37,99,235,0.3)", className: "active" },
 };
 
-export function Key({ label, x, y, width, height, state, blank }: KeyProps) {
+export function Key({ label, x, y, width, height, state, blank, hideLabel }: KeyProps) {
   if (blank) return null;
 
   const style = STATE_STYLES[state];
@@ -47,18 +48,20 @@ export function Key({ label, x, y, width, height, state, blank }: KeyProps) {
         strokeWidth={1}
         className={style.className}
       />
-      <text
-        x={x + width / 2 + offsetX}
-        y={y + height / 2 + offsetY}
-        textAnchor="middle"
-        dominantBaseline="central"
-        fill={style.textFill}
-        fontSize={fontSize}
-        fontFamily="'JetBrains Mono', monospace"
-        fontWeight={state === "active" ? "bold" : "normal"}
-      >
-        {label}
-      </text>
+      {!hideLabel && (
+        <text
+          x={x + width / 2 + offsetX}
+          y={y + height / 2 + offsetY}
+          textAnchor="middle"
+          dominantBaseline="central"
+          fill={style.textFill}
+          fontSize={fontSize}
+          fontFamily="'JetBrains Mono', monospace"
+          fontWeight={state === "active" ? "bold" : "normal"}
+        >
+          {label}
+        </text>
+      )}
     </g>
   );
 }
