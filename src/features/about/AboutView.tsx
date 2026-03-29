@@ -4,6 +4,7 @@ const LINKS = [
   { label: "FIRMWARE_GUIDE", url: "https://github.com/tompi/cheapino/blob/master/doc/firmware.md", desc: "QMK firmware build and flash instructions" },
   { label: "VIAL_CONFIGURATOR", url: "https://get.vial.today/", desc: "GUI tool to remap keys and layers in real time" },
   { label: "QMK_FIRMWARE", url: "https://qmk.fm/", desc: "Open-source keyboard firmware powering the Cheapino" },
+  { label: "36_KEY_LAYOUT_GUIDE", url: "https://peterxjang.com/blog/designing-a-36-key-custom-keyboard-layout.html", desc: "Peter Xjang's guide to designing a 36-key custom keyboard layout" },
   { label: "TRAINER_SOURCE", url: "https://github.com/arnlaugsson/cheapino-trainer", desc: "Source code for this training app" },
 ] as const;
 

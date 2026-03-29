@@ -81,7 +81,7 @@ export function KeyboardVisualizer({
   const padding = 20;
 
   return (
-    <div>
+    <div className="w-full">
       <div className="flex gap-2 mb-6">
         {layout.layers.map((layer) => {
           const isSelected = displayLayerName === layer.name;
