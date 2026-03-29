@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { stages } from "../data/stages";
-import { defaultLayout } from "../data/layout";
+import { LAYOUT_PRESETS, getPresetById } from "../data/layouts";
 import { KeyboardVisualizer } from "../features/keyboard/KeyboardVisualizer";
 import { useKeyPress } from "../features/keyboard/useKeyPress";
 import { TrainerView } from "../features/trainer/TrainerView";
@@ -15,8 +15,15 @@ import {
 
 type Page = "train" | "about";
 
+const LAYOUT_STORAGE_KEY = "cheapino-layout-preset";
+
+function getSavedPresetId(): string {
+  return localStorage.getItem(LAYOUT_STORAGE_KEY) ?? LAYOUT_PRESETS[0].id;
+}
+
 function App() {
   const [page, setPage] = useState<Page>("train");
+  const [presetId, setPresetId] = useState(getSavedPresetId);
   const [activeStageId, setActiveStageId] = useState(0);
   const [exerciseKey, setExerciseKey] = useState(0);
   const [lastResult, setLastResult] = useState<{
@@ -25,8 +32,15 @@ function App() {
   } | null>(null);
   const [exercise, setExercise] = useState(() => generateExercise(stages[0]));
 
+  const preset = getPresetById(presetId) ?? LAYOUT_PRESETS[0];
+  const layout = preset.layout;
   const stage = stages[activeStageId];
   const { activeKeys } = useKeyPress();
+
+  const handleSelectPreset = useCallback((id: string) => {
+    setPresetId(id);
+    localStorage.setItem(LAYOUT_STORAGE_KEY, id);
+  }, []);
 
   const handleComplete = useCallback(
     (result: { wpm: number; accuracy: number }) => {
@@ -102,19 +116,45 @@ function App() {
             </button>
           </nav>
         </div>
-        <button
-          tabIndex={-1}
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => {
-            document.documentElement.classList.toggle("light");
-            const isLight = document.documentElement.classList.contains("light");
-            localStorage.setItem("cheapino-theme", isLight ? "light" : "dark");
-          }}
-          className="flex items-center gap-2 text-[10px] font-bold tracking-widest border border-outline px-3 py-1 hover:bg-surface-high transition-colors uppercase"
-        >
-          <span className="material-symbols-outlined text-sm">light_mode</span>
-          THEME
-        </button>
+        <div className="flex items-center gap-4">
+          {/* Layout Preset Picker */}
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-on-surface-variant opacity-40 uppercase tracking-widest">
+              Layout:
+            </span>
+            <div className="flex gap-1">
+              {LAYOUT_PRESETS.map((p) => (
+                <button
+                  key={p.id}
+                  tabIndex={-1}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => handleSelectPreset(p.id)}
+                  title={p.description}
+                  className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 border transition-colors ${
+                    presetId === p.id
+                      ? "bg-primary text-on-primary border-primary"
+                      : "bg-transparent text-on-surface-variant border-outline hover:border-primary hover:text-primary-light"
+                  }`}
+                >
+                  {p.name}
+                </button>
+              ))}
+            </div>
+          </div>
+          <button
+            tabIndex={-1}
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => {
+              document.documentElement.classList.toggle("light");
+              const isLight = document.documentElement.classList.contains("light");
+              localStorage.setItem("cheapino-theme", isLight ? "light" : "dark");
+            }}
+            className="flex items-center gap-2 text-[10px] font-bold tracking-widest border border-outline px-3 py-1 hover:bg-surface-high transition-colors uppercase"
+          >
+            <span className="material-symbols-outlined text-sm">light_mode</span>
+            THEME
+          </button>
+        </div>
       </header>
 
       {page === "about" ? (
@@ -148,7 +188,7 @@ function App() {
 
             <div className="mb-12 w-full flex justify-center">
               <KeyboardVisualizer
-                layout={defaultLayout}
+                layout={layout}
                 activeLayer={stage.layers[stage.layers.length - 1]}
                 activeKeys={activeKeys}
               />

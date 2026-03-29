@@ -70,7 +70,8 @@ export function KeyboardVisualizer({
   const displayLayerName = lockedLayer
     ? activeLayer
     : browsingLayer ?? activeLayer;
-  const displayLayer = layout.layers.find((l) => l.name === displayLayerName);
+  const displayLayer =
+    layout.layers.find((l) => l.name === displayLayerName) ?? layout.layers[0];
 
   if (!displayLayer) return null;
 
