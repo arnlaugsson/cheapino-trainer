@@ -32,13 +32,21 @@ export function StageList({ stages, activeStageId, onSelectStage }: StageListPro
             tabIndex={-1}
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => {
-              if (unlocked) onSelectStage(stage.id);
+              if (unlocked) {
+                onSelectStage(stage.id);
+              } else if (
+                window.confirm(
+                  `"${stage.name}" is still locked. Skip ahead anyway?`,
+                )
+              ) {
+                onSelectStage(stage.id);
+              }
             }}
             className={`
               text-left p-4 border-b border-outline transition-colors
               ${isActive ? "bg-surface-highest border-l-4 border-l-primary" : "border-l-4 border-l-transparent"}
               ${!isActive && unlocked ? "hover:bg-surface-high cursor-pointer" : ""}
-              ${!unlocked ? "cursor-not-allowed" : ""}
+              ${!unlocked ? "opacity-70 hover:bg-surface-high cursor-pointer" : ""}
             `}
           >
             <div className="flex justify-between items-start mb-2">
