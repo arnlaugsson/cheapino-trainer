@@ -35,6 +35,18 @@ const numberWords: string[] = [
   "2026", "1999", "2000", "365", "24", "60", "12",
 ];
 
+const modifierWords: string[] = [
+  "Hello", "World", "The", "Quick", "Brown", "Fox", "Jump", "Over", "Lazy", "Dog",
+  "Alice", "Bob", "Charlie", "Dave", "Eve", "Frank", "Grace", "Henry",
+  "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
+  "January", "February", "March", "April", "May", "June", "July", "August",
+  "React", "TypeScript", "JavaScript", "Node", "Python", "Linux", "Docker",
+  "GitHub", "Google", "Apple", "Amazon", "Netflix",
+  "HomePage", "UserName", "PassWord", "LogIn", "SignUp", "DashBoard",
+  "CamelCase", "PascalCase", "UpperCase", "LowerCase",
+  "New", "Open", "Save", "Close", "Edit", "Delete", "Create", "Update",
+];
+
 const symbolWords: string[] = [
   "()", "[]", "{}", "<>",
   "a + b", "x - y", "n * 2", "a / b",
@@ -56,8 +68,9 @@ export function getWordsForStage(stageId: number): string[] {
     case 0:
       return homeRowWords;
     case 1:
-    case 2:
       return commonWords;
+    case 2:
+      return modifierWords;
     case 3:
       return numberWords;
     case 4:
