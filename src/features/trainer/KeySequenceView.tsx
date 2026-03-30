@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const KEY_MAP: Record<string, string> = {
   Left: "ArrowLeft",
@@ -11,6 +11,11 @@ const KEY_MAP: Record<string, string> = {
   PageDown: "PageDown",
 };
 
+const NAV_KEYS = new Set([
+  ...Object.values(KEY_MAP),
+  ...Object.keys(KEY_MAP),
+]);
+
 type KeyStatus = "pending" | "correct" | "wrong";
 
 type KeySequenceViewProps = {
@@ -21,6 +26,7 @@ type KeySequenceViewProps = {
 export function KeySequenceView({ prompt, onComplete }: KeySequenceViewProps) {
   const keys = prompt.split(" ").filter(Boolean);
   const [cursor, setCursor] = useState(0);
+  const cursorRef = useRef(0);
   const [statuses, setStatuses] = useState<KeyStatus[]>(
     () => keys.map(() => "pending"),
   );
@@ -28,52 +34,48 @@ export function KeySequenceView({ prompt, onComplete }: KeySequenceViewProps) {
   const [correctPresses, setCorrectPresses] = useState(0);
   const completedRef = useRef(false);
 
-  const isComplete = cursor >= keys.length;
-
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (isComplete) return;
-
-      const expectedLabel = keys[cursor];
-      const expectedKey = KEY_MAP[expectedLabel] ?? expectedLabel;
-      const isNavKey =
-        Object.values(KEY_MAP).includes(e.key) ||
-        Object.keys(KEY_MAP).includes(e.key);
-      if (!isNavKey) return;
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (cursorRef.current >= keys.length) return;
+      if (!NAV_KEYS.has(e.key)) return;
 
       e.preventDefault();
       setTotalPresses((prev) => prev + 1);
 
+      const cur = cursorRef.current;
+      const expectedLabel = keys[cur];
+      const expectedKey = KEY_MAP[expectedLabel] ?? expectedLabel;
+
       if (e.key === expectedKey) {
         setStatuses((prev) => {
           const next = [...prev];
-          next[cursor] = "correct";
+          next[cur] = "correct";
           return next;
         });
         setCorrectPresses((prev) => prev + 1);
-        setCursor((prev) => prev + 1);
+        cursorRef.current = cur + 1;
+        setCursor(cur + 1);
       } else {
         setStatuses((prev) => {
           const next = [...prev];
-          next[cursor] = "wrong";
+          next[cur] = "wrong";
           return next;
         });
         setTimeout(() => {
           setStatuses((prev) => {
             const next = [...prev];
-            if (next[cursor] === "wrong") next[cursor] = "pending";
+            if (next[cur] === "wrong") next[cur] = "pending";
             return next;
           });
         }, 300);
       }
-    },
-    [cursor, keys, isComplete],
-  );
+    };
 
-  useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleKeyDown]);
+  }, [prompt]);
+
+  const isComplete = cursor >= keys.length;
 
   useEffect(() => {
     if (isComplete && !completedRef.current) {
