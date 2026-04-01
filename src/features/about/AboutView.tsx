@@ -69,6 +69,19 @@ export function AboutView() {
         </p>
       </section>
 
+      <section className="mb-10">
+        <h3 className="font-headline text-lg font-bold uppercase tracking-widest mb-4">
+          Built By
+        </h3>
+        <p className="text-on-surface-variant leading-relaxed">
+          Made by{" "}
+          <a href="https://github.com/arnlaugsson" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary-light transition-colors font-bold">
+            Skuli Arnlaugsson
+          </a>
+          {" "}— learning to type on a Cheapino one stage at a time.
+        </p>
+      </section>
+
       <section>
         <h3 className="font-headline text-lg font-bold uppercase tracking-widest mb-4">
           Links
