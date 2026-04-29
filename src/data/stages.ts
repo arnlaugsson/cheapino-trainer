@@ -1,3 +1,5 @@
+import type { Layout } from "./layout";
+
 export type ExerciseType =
   | "single-keys"
   | "words"
@@ -159,3 +161,29 @@ export const stages: Stage[] = [
     },
   },
 ];
+
+function getRightPinkyHomeKey(layout: Layout): string {
+  const homeRow = layout.layers[0]?.right?.[1];
+  return homeRow?.[4]?.label ?? ";";
+}
+
+export function getStagesForLayout(layout: Layout): Stage[] {
+  const pinky = getRightPinkyHomeKey(layout);
+  if (pinky === ";") return stages;
+
+  const stage0 = stages[0];
+  const singleKeys = stage0.exercises?.["single-keys"]?.map((s) =>
+    s.replaceAll(";", pinky),
+  );
+
+  const updatedStage0: Stage = {
+    ...stage0,
+    description: stage0.description.replaceAll(";", pinky),
+    exercises: {
+      ...stage0.exercises,
+      ...(singleKeys ? { "single-keys": singleKeys } : {}),
+    },
+  };
+
+  return [updatedStage0, ...stages.slice(1)];
+}

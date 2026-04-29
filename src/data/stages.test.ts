@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { stages } from "./stages";
+import { stages, getStagesForLayout } from "./stages";
 import type { Stage, ExerciseType } from "./stages";
+import { LAYOUT_PRESETS } from "./layouts";
 
 describe("stages", () => {
   it("has 7 stages (0-6)", () => {
@@ -44,6 +45,39 @@ describe("stages", () => {
           expect(stage.exercises?.[type]?.length).toBeGreaterThan(0);
         }
       }
+    }
+  });
+});
+
+describe("getStagesForLayout", () => {
+  const original = LAYOUT_PRESETS.find((p) => p.id === "original")!.layout;
+  const peterxjang = LAYOUT_PRESETS.find((p) => p.id === "peterxjang")!.layout;
+
+  it("returns the static stages unchanged for layouts with ; on the home row", () => {
+    const result = getStagesForLayout(original);
+    expect(result).toBe(stages);
+  });
+
+  it("rewrites stage 0 description for layouts with a different right-pinky home key", () => {
+    const result = getStagesForLayout(peterxjang);
+    expect(result[0].description).toContain("H J K L '");
+    expect(result[0].description).not.toContain(";");
+  });
+
+  it("rewrites stage 0 single-keys exercises to use the active layout's home-row pinky key", () => {
+    const result = getStagesForLayout(peterxjang);
+    const singleKeys = result[0].exercises?.["single-keys"] ?? [];
+    expect(singleKeys.length).toBeGreaterThan(0);
+    for (const exercise of singleKeys) {
+      expect(exercise).not.toContain(";");
+    }
+    expect(singleKeys.some((s) => s.includes("'"))).toBe(true);
+  });
+
+  it("leaves stages 1-6 untouched", () => {
+    const result = getStagesForLayout(peterxjang);
+    for (let i = 1; i < stages.length; i++) {
+      expect(result[i]).toBe(stages[i]);
     }
   });
 });

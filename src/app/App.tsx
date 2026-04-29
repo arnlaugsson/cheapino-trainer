@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect, useRef } from "react";
-import { stages } from "../data/stages";
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
+import { getStagesForLayout } from "../data/stages";
 import { LAYOUT_PRESETS, getPresetById } from "../data/layouts";
 import { KeyboardVisualizer } from "../features/keyboard/KeyboardVisualizer";
 import { useKeyPress } from "../features/keyboard/useKeyPress";
@@ -25,6 +25,9 @@ function getSavedPresetId(): string {
 function App() {
   const [page, setPage] = useState<Page>("train");
   const [presetId, setPresetId] = useState(getSavedPresetId);
+  const preset = getPresetById(presetId) ?? LAYOUT_PRESETS[0];
+  const layout = preset.layout;
+  const stages = useMemo(() => getStagesForLayout(layout), [layout]);
   const [activeStageId, setActiveStageId] = useState(0);
   const [exerciseKey, setExerciseKey] = useState(0);
   const [hideLabels, setHideLabels] = useState(false);
@@ -34,15 +37,21 @@ function App() {
   } | null>(null);
   const [exercise, setExercise] = useState(() => generateExercise(stages[0]));
 
-  const preset = getPresetById(presetId) ?? LAYOUT_PRESETS[0];
-  const layout = preset.layout;
   const stage = stages[activeStageId];
   const { activeKeys } = useKeyPress();
 
-  const handleSelectPreset = useCallback((id: string) => {
-    setPresetId(id);
-    localStorage.setItem(LAYOUT_STORAGE_KEY, id);
-  }, []);
+  const handleSelectPreset = useCallback(
+    (id: string) => {
+      setPresetId(id);
+      localStorage.setItem(LAYOUT_STORAGE_KEY, id);
+      const nextPreset = getPresetById(id) ?? LAYOUT_PRESETS[0];
+      const nextStages = getStagesForLayout(nextPreset.layout);
+      setExercise(generateExercise(nextStages[activeStageId]));
+      setExerciseKey((prev) => prev + 1);
+      setLastResult(null);
+    },
+    [activeStageId],
+  );
 
   const handleComplete = useCallback(
     (result: { wpm: number; accuracy: number }) => {
@@ -56,14 +65,17 @@ function App() {
     setExercise(generateExercise(stages[activeStageId]));
     setExerciseKey((prev) => prev + 1);
     setLastResult(null);
-  }, [activeStageId]);
+  }, [stages, activeStageId]);
 
-  const handleSelectStage = useCallback((stageId: number) => {
-    setActiveStageId(stageId);
-    setExercise(generateExercise(stages[stageId]));
-    setExerciseKey((prev) => prev + 1);
-    setLastResult(null);
-  }, []);
+  const handleSelectStage = useCallback(
+    (stageId: number) => {
+      setActiveStageId(stageId);
+      setExercise(generateExercise(stages[stageId]));
+      setExerciseKey((prev) => prev + 1);
+      setLastResult(null);
+    },
+    [stages],
+  );
 
   const lastResultRef = useRef(lastResult);
   lastResultRef.current = lastResult;
