@@ -27,7 +27,7 @@ function App() {
   const [presetId, setPresetId] = useState(getSavedPresetId);
   const preset = getPresetById(presetId) ?? LAYOUT_PRESETS[0];
   const layout = preset.layout;
-  const stages = useMemo(() => getStagesForLayout(layout), [layout]);
+  const stages = useMemo(() => getStagesForLayout(preset), [preset]);
   const [activeStageId, setActiveStageId] = useState(0);
   const [exerciseKey, setExerciseKey] = useState(0);
   const [hideLabels, setHideLabels] = useState(false);
@@ -45,7 +45,7 @@ function App() {
       setPresetId(id);
       localStorage.setItem(LAYOUT_STORAGE_KEY, id);
       const nextPreset = getPresetById(id) ?? LAYOUT_PRESETS[0];
-      const nextStages = getStagesForLayout(nextPreset.layout);
+      const nextStages = getStagesForLayout(nextPreset);
       setExercise(generateExercise(nextStages[activeStageId]));
       setExerciseKey((prev) => prev + 1);
       setLastResult(null);

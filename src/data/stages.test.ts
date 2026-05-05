@@ -50,12 +50,12 @@ describe("stages", () => {
 });
 
 describe("getStagesForLayout", () => {
-  const original = LAYOUT_PRESETS.find((p) => p.id === "original")!.layout;
-  const peterxjang = LAYOUT_PRESETS.find((p) => p.id === "peterxjang")!.layout;
+  const original = LAYOUT_PRESETS.find((p) => p.id === "original")!;
+  const peterxjang = LAYOUT_PRESETS.find((p) => p.id === "peterxjang")!;
 
-  it("returns the static stages unchanged for layouts with ; on the home row", () => {
+  it("preserves stage descriptions and layers for the Original layout", () => {
     const result = getStagesForLayout(original);
-    expect(result).toBe(stages);
+    expect(result).toEqual(stages);
   });
 
   it("rewrites stage 0 description for layouts with a different right-pinky home key", () => {
@@ -74,10 +74,44 @@ describe("getStagesForLayout", () => {
     expect(singleKeys.some((s) => s.includes("'"))).toBe(true);
   });
 
-  it("leaves stages 1-6 untouched", () => {
+  it("rewrites stage 3 (Numbers) layers and activator to point at Peter Xjang's Symbols layer", () => {
     const result = getStagesForLayout(peterxjang);
-    for (let i = 1; i < stages.length; i++) {
-      expect(result[i]).toBe(stages[i]);
-    }
+    expect(result[3].layers).toEqual(["Base", "Symbols"]);
+    expect(result[3].description).toBe(
+      "Hold Space to activate the Symbols layer. Practice typing digits, dates, and addresses.",
+    );
+  });
+
+  it("rewrites stage 4 (Symbols) activator from 'hold Tab' to 'hold Space' on Peter Xjang", () => {
+    const result = getStagesForLayout(peterxjang);
+    expect(result[4].layers).toEqual(["Base", "Symbols"]);
+    expect(result[4].description.startsWith("Hold Space to activate the Symbols layer.")).toBe(true);
+    expect(result[4].description).not.toContain("Hold Tab");
+  });
+
+  it("rewrites stage 5 (Navigation) to use Peter Xjang's Symbols layer", () => {
+    const result = getStagesForLayout(peterxjang);
+    expect(result[5].layers).toEqual(["Base", "Symbols"]);
+    expect(result[5].description.startsWith("Hold Space to activate the Symbols layer.")).toBe(true);
+    expect(result[5].description).not.toContain("Hold Enter");
+  });
+
+  it("dedupes stage 6 layers from the layout's role mapping", () => {
+    const peterResult = getStagesForLayout(peterxjang);
+    expect(peterResult[6].layers).toEqual(["Base", "Symbols"]);
+
+    const originalResult = getStagesForLayout(original);
+    expect(originalResult[6].layers).toEqual([
+      "Base",
+      "Numbers",
+      "Symbols",
+      "Navigation",
+    ]);
+  });
+
+  it("leaves stages without a role unchanged", () => {
+    const result = getStagesForLayout(peterxjang);
+    expect(result[1]).toEqual(stages[1]);
+    expect(result[2]).toEqual(stages[2]);
   });
 });

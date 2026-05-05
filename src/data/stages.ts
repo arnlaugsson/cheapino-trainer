@@ -1,4 +1,5 @@
 import type { Layout } from "./layout";
+import type { LayoutPreset, LayerRole } from "./layouts";
 
 export type ExerciseType =
   | "single-keys"
@@ -16,6 +17,7 @@ export type Stage = {
   exerciseTypes: ExerciseType[];
   threshold: { wpm: number; accuracy: number };
   exercises?: Partial<Record<ExerciseType, string[]>>;
+  role?: LayerRole;
 };
 
 export const stages: Stage[] = [
@@ -73,8 +75,9 @@ export const stages: Stage[] = [
   {
     id: 3,
     name: "Numbers",
-    description: "Hold Space to activate the number layer. Practice typing digits, dates, and addresses.",
+    description: "Hold Space to activate the Numbers layer. Practice typing digits, dates, and addresses.",
     layers: ["Base", "Numbers"],
+    role: "numbers",
     exerciseTypes: ["single-keys", "phrases"],
     threshold: { wpm: 15, accuracy: 0.9 },
     exercises: {
@@ -96,8 +99,9 @@ export const stages: Stage[] = [
   {
     id: 4,
     name: "Symbols",
-    description: "Hold Tab to activate the symbol layer. Practice code-like snippets with brackets, operators, and special characters.",
-    layers: ["Base", "Numbers", "Symbols"],
+    description: "Hold Tab to activate the Symbols layer. Practice code-like snippets with brackets, operators, and special characters.",
+    layers: ["Base", "Symbols"],
+    role: "symbols",
     exerciseTypes: ["single-keys", "code-snippets"],
     threshold: { wpm: 12, accuracy: 0.85 },
     exercises: {
@@ -121,8 +125,9 @@ export const stages: Stage[] = [
   {
     id: 5,
     name: "Navigation",
-    description: "Hold Enter to activate the navigation layer. Practice moving through text with arrow keys, Home, End, Page Up, and Page Down.",
+    description: "Hold Enter to activate the Navigation layer. Practice moving through text with arrow keys, Home, End, Page Up, and Page Down.",
     layers: ["Base", "Navigation"],
+    role: "navigation",
     exerciseTypes: ["key-sequence"],
     threshold: { wpm: 0, accuracy: 0.9 },
     exercises: {
@@ -167,23 +172,60 @@ function getRightPinkyHomeKey(layout: Layout): string {
   return homeRow?.[4]?.label ?? ";";
 }
 
-export function getStagesForLayout(layout: Layout): Stage[] {
+function resolveStage0(stage: Stage, layout: Layout): Stage {
   const pinky = getRightPinkyHomeKey(layout);
-  if (pinky === ";") return stages;
+  if (pinky === ";") return stage;
 
-  const stage0 = stages[0];
-  const singleKeys = stage0.exercises?.["single-keys"]?.map((s) =>
+  const singleKeys = stage.exercises?.["single-keys"]?.map((s) =>
     s.replaceAll(";", pinky),
   );
 
-  const updatedStage0: Stage = {
-    ...stage0,
-    description: stage0.description.replaceAll(";", pinky),
+  return {
+    ...stage,
+    description: stage.description.replaceAll(";", pinky),
     exercises: {
-      ...stage0.exercises,
+      ...stage.exercises,
       ...(singleKeys ? { "single-keys": singleKeys } : {}),
     },
   };
+}
 
-  return [updatedStage0, ...stages.slice(1)];
+const ACTIVATOR_SENTENCE = /^Hold [^.]+\. /;
+
+function resolveRoleStage(stage: Stage, preset: LayoutPreset): Stage {
+  if (!stage.role) return stage;
+
+  const layerName = preset.roleToLayer[stage.role];
+  const layer = preset.layout.layers.find((l) => l.name === layerName);
+  if (!layer) return stage;
+
+  const activator = layer.activator
+    ? layer.activator.charAt(0).toUpperCase() + layer.activator.slice(1)
+    : `activate ${layer.name}`;
+  const newPrefix = `${activator} to activate the ${layer.name} layer. `;
+  const body = stage.description.replace(ACTIVATOR_SENTENCE, "");
+
+  return {
+    ...stage,
+    description: newPrefix + body,
+    layers: ["Base", layer.name],
+  };
+}
+
+function resolveFullIntegrationStage(stage: Stage, preset: LayoutPreset): Stage {
+  if (stage.id !== 6) return stage;
+
+  const uniqueLayers = Array.from(new Set(Object.values(preset.roleToLayer)));
+  return {
+    ...stage,
+    layers: ["Base", ...uniqueLayers],
+  };
+}
+
+export function getStagesForLayout(preset: LayoutPreset): Stage[] {
+  return stages.map((stage) => {
+    if (stage.id === 0) return resolveStage0(stage, preset.layout);
+    if (stage.id === 6) return resolveFullIntegrationStage(stage, preset);
+    return resolveRoleStage(stage, preset);
+  });
 }

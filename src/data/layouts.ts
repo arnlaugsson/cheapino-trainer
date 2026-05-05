@@ -136,11 +136,14 @@ const pxFunction: Layer = {
 
 // ─── Exported Presets ────────────────────────────────────────────────────────
 
+export type LayerRole = "numbers" | "symbols" | "navigation";
+
 export type LayoutPreset = {
   id: string;
   name: string;
   description: string;
   layout: Layout;
+  roleToLayer: Record<LayerRole, string>;
 };
 
 export const LAYOUT_PRESETS: LayoutPreset[] = [
@@ -149,12 +152,22 @@ export const LAYOUT_PRESETS: LayoutPreset[] = [
     name: "Peter Xjang",
     description: "Layer-tap thumbs, nav on symbol layer, function layer for media/brightness",
     layout: { layers: [pxBase, pxSymbols, pxFunction] },
+    roleToLayer: {
+      numbers: "Symbols",
+      symbols: "Symbols",
+      navigation: "Symbols",
+    },
   },
   {
     id: "original",
     name: "Original",
     description: "Home-row mods, separate number/symbol/navigation layers",
     layout: { layers: [origBase, origNumbers, origSymbols, origNavigation] },
+    roleToLayer: {
+      numbers: "Numbers",
+      symbols: "Symbols",
+      navigation: "Navigation",
+    },
   },
 ];
 
