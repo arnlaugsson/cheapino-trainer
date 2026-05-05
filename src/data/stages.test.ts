@@ -4,10 +4,10 @@ import type { Stage, ExerciseType } from "./stages";
 import { LAYOUT_PRESETS } from "./layouts";
 
 describe("stages", () => {
-  it("has 7 stages (0-6)", () => {
-    expect(stages).toHaveLength(7);
+  it("has 8 stages (0-7)", () => {
+    expect(stages).toHaveLength(8);
     expect(stages[0].id).toBe(0);
-    expect(stages[6].id).toBe(6);
+    expect(stages[7].id).toBe(7);
   });
 
   it("each stage has required fields", () => {
@@ -29,7 +29,7 @@ describe("stages", () => {
   });
 
   it("each stage references valid layer names", () => {
-    const validLayers = ["Base", "Numbers", "Symbols", "Navigation"];
+    const validLayers = ["Base", "Numbers", "Symbols", "Navigation", "Function"];
     for (const stage of stages) {
       for (const layer of stage.layers) {
         expect(validLayers).toContain(layer);
@@ -53,9 +53,21 @@ describe("getStagesForLayout", () => {
   const original = LAYOUT_PRESETS.find((p) => p.id === "original")!;
   const peterxjang = LAYOUT_PRESETS.find((p) => p.id === "peterxjang")!;
 
-  it("preserves stage descriptions and layers for the Original layout", () => {
+  it("preserves stages 0-6 for the Original layout and filters out the Function stage", () => {
     const result = getStagesForLayout(original);
-    expect(result).toEqual(stages);
+    expect(result).toHaveLength(7);
+    expect(result).toEqual(stages.slice(0, 7));
+    expect(result.some((s) => s.role === "function")).toBe(false);
+  });
+
+  it("includes the Function stage for Peter Xjang", () => {
+    const result = getStagesForLayout(peterxjang);
+    expect(result).toHaveLength(8);
+    expect(result[7].name).toBe("Function Keys");
+    expect(result[7].layers).toEqual(["Base", "Function"]);
+    expect(result[7].description.startsWith("Hold Bksp to activate the Function layer.")).toBe(
+      true,
+    );
   });
 
   it("rewrites stage 0 description for layouts with a different right-pinky home key", () => {
@@ -98,7 +110,7 @@ describe("getStagesForLayout", () => {
 
   it("dedupes stage 6 layers from the layout's role mapping", () => {
     const peterResult = getStagesForLayout(peterxjang);
-    expect(peterResult[6].layers).toEqual(["Base", "Symbols"]);
+    expect(peterResult[6].layers).toEqual(["Base", "Symbols", "Function"]);
 
     const originalResult = getStagesForLayout(original);
     expect(originalResult[6].layers).toEqual([

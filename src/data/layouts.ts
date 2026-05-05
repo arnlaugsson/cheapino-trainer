@@ -136,14 +136,14 @@ const pxFunction: Layer = {
 
 // ─── Exported Presets ────────────────────────────────────────────────────────
 
-export type LayerRole = "numbers" | "symbols" | "navigation";
+export type LayerRole = "numbers" | "symbols" | "navigation" | "function";
 
 export type LayoutPreset = {
   id: string;
   name: string;
   description: string;
   layout: Layout;
-  roleToLayer: Record<LayerRole, string>;
+  roleToLayer: Partial<Record<LayerRole, string>>;
 };
 
 export const LAYOUT_PRESETS: LayoutPreset[] = [
@@ -156,6 +156,7 @@ export const LAYOUT_PRESETS: LayoutPreset[] = [
       numbers: "Symbols",
       symbols: "Symbols",
       navigation: "Symbols",
+      function: "Function",
     },
   },
   {

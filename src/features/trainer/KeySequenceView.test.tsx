@@ -60,4 +60,15 @@ describe("KeySequenceView", () => {
     fireEvent.keyDown(window, { key: "ArrowDown" });
     expect(onComplete).toHaveBeenCalled();
   });
+
+  it("accepts F-key presses for function-layer exercises", () => {
+    const onComplete = vi.fn();
+    render(<KeySequenceView prompt="F1 F5 F12" onComplete={onComplete} />);
+    fireEvent.keyDown(window, { key: "F1" });
+    fireEvent.keyDown(window, { key: "F5" });
+    fireEvent.keyDown(window, { key: "F12" });
+    expect(onComplete).toHaveBeenCalledWith(
+      expect.objectContaining({ accuracy: 1.0 }),
+    );
+  });
 });

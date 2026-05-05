@@ -46,7 +46,9 @@ function App() {
       localStorage.setItem(LAYOUT_STORAGE_KEY, id);
       const nextPreset = getPresetById(id) ?? LAYOUT_PRESETS[0];
       const nextStages = getStagesForLayout(nextPreset);
-      setExercise(generateExercise(nextStages[activeStageId]));
+      const clampedStageId = Math.min(activeStageId, nextStages.length - 1);
+      if (clampedStageId !== activeStageId) setActiveStageId(clampedStageId);
+      setExercise(generateExercise(nextStages[clampedStageId]));
       setExerciseKey((prev) => prev + 1);
       setLastResult(null);
     },

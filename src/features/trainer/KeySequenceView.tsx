@@ -11,9 +11,12 @@ const KEY_MAP: Record<string, string> = {
   PageDown: "PageDown",
 };
 
-const NAV_KEYS = new Set([
+const FUNCTION_KEYS = Array.from({ length: 12 }, (_, i) => `F${i + 1}`);
+
+const ALLOWED_KEYS = new Set([
   ...Object.values(KEY_MAP),
   ...Object.keys(KEY_MAP),
+  ...FUNCTION_KEYS,
 ]);
 
 type KeyStatus = "pending" | "correct" | "wrong";
@@ -37,7 +40,7 @@ export function KeySequenceView({ prompt, onComplete }: KeySequenceViewProps) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (cursorRef.current >= keys.length) return;
-      if (!NAV_KEYS.has(e.key)) return;
+      if (!ALLOWED_KEYS.has(e.key)) return;
 
       e.preventDefault();
       setTotalPresses((prev) => prev + 1);

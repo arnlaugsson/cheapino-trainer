@@ -165,6 +165,24 @@ export const stages: Stage[] = [
       ],
     },
   },
+  {
+    id: 7,
+    name: "Function Keys",
+    description: "Hold Bksp to activate the Function layer. Practice F1-F12. Media and brightness keys live on the home row but are usually intercepted by the OS.",
+    layers: ["Base", "Function"],
+    role: "function",
+    exerciseTypes: ["key-sequence"],
+    threshold: { wpm: 0, accuracy: 0.9 },
+    exercises: {
+      "key-sequence": [
+        "F1 F2 F3 F4 F5",
+        "F6 F7 F8 F9 F10",
+        "F11 F12 F11 F12",
+        "F1 F2 F3 F4 F5 F6 F7 F8 F9 F10",
+        "F5 F6 F7 F8 F9",
+      ],
+    },
+  },
 ];
 
 function getRightPinkyHomeKey(layout: Layout): string {
@@ -223,9 +241,11 @@ function resolveFullIntegrationStage(stage: Stage, preset: LayoutPreset): Stage 
 }
 
 export function getStagesForLayout(preset: LayoutPreset): Stage[] {
-  return stages.map((stage) => {
-    if (stage.id === 0) return resolveStage0(stage, preset.layout);
-    if (stage.id === 6) return resolveFullIntegrationStage(stage, preset);
-    return resolveRoleStage(stage, preset);
-  });
+  return stages
+    .filter((stage) => !stage.role || preset.roleToLayer[stage.role] !== undefined)
+    .map((stage) => {
+      if (stage.id === 0) return resolveStage0(stage, preset.layout);
+      if (stage.id === 6) return resolveFullIntegrationStage(stage, preset);
+      return resolveRoleStage(stage, preset);
+    });
 }
